@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="phone right" id="phone">
+
+    <!-- Fake home screen -->
+    <div class="home">
+      <h1 id="time"></h1>
+      <p>Swipe or tap the edge handle</p>
+    </div>
+
+    <!-- The edge handle -->
+    <div id="handle"></div>
+
+    <!-- Dark layer behind the panel -->
+    <div id="backdrop"></div>
+
+    <!-- The edge panel -->
+   <aside id="panel">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="contactsTab">Contacts</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+
+  <section id="contactsTab" class="tab show">
+    <input id="search" placeholder="Search contacts...">
+    <button id="importBtn" class="small wide">Import from phone</button>
+
+    <div class="add">
+      <input id="cName" placeholder="Name">
+      <input id="cPhone" placeholder="Phone">
+      <button id="addBtn">Add contact</button>
+    </div>
+
+    <div class="list-wrap">
+      <div id="list"></div>
+      <div id="az"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="tab">
+    <label>Panel side
+      <select id="side">
+        <option value="right">Right</option>
+        <option value="left">Left</option>
+      </select>
+    </label>
+    <label>Handle opacity
+      <input id="opacity" type="range" min="0.1" max="1" step="0.1" value="0.6">
+    </label>
+  </section>
+</aside>
+
+    <div id="toast"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
