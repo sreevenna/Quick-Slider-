@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import useLocalStorage from "./useLocalStorage";
-import { getContacts, createContact, updateContact, deleteContact } from "./api";
+import {
+  getContacts,
+  createContact,
+  updateContact,
+  deleteContact,
+  getMe,
+  getToken,
+  setToken,
+  setUnauthorizedHandler,
+} from "./api";
+import Login from "./components/login";
 import ContactsTab from "./components/ContactsTab";
 import SettingsTab from "./components/SettingsTab";
 
@@ -10,8 +20,10 @@ const getTime = () =>
 
 export default function App() {
   // STATE
-  const [contacts, setContacts] = useState([]);   // comes from the API now
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);          // who is logged in
+  const [checking, setChecking] = useState(true);  // checking a saved token
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useLocalStorage("settings", { side: "right", opacity: 0.6 });
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("contacts");
@@ -24,13 +36,41 @@ export default function App() {
     setTimeout(() => setToast(""), 2000);
   }
 
-  // LOAD CONTACTS ONCE when the app opens
+  function logout() {
+    setToken(null);
+    setUser(null);
+    setContacts([]);
+    setOpen(false);
+    setTab("contacts");
+  }
+
+  function handleLogin({ token, user }) {
+    setToken(token);
+    setUser(user);
+  }
+
+  // ON START: if a token is saved, check that it is still valid
   useEffect(() => {
+    setUnauthorizedHandler(logout);
+    if (!getToken()) {
+      setChecking(false);
+      return;
+    }
+    getMe()
+      .then((data) => setUser(data.user))
+      .catch(() => setToken(null))
+      .finally(() => setChecking(false));
+  }, []);
+
+  // LOAD CONTACTS after a user is logged in
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
     getContacts()
       .then(setContacts)
       .catch(() => showToast("Cannot reach server"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   // CLOCK
   useEffect(() => {
@@ -38,7 +78,7 @@ export default function App() {
     return () => clearInterval(id);
   }, []);
 
-  // API ACTIONS: ask the server, then update the screen
+  // API ACTIONS
   async function addContact(name, phone) {
     try {
       const created = await createContact(name, phone);
@@ -93,6 +133,23 @@ export default function App() {
     startX.current = null;
   }
 
+  // SCREENS (after all hooks)
+  if (checking) {
+    return (
+      <div className={"phone " + settings.side}>
+        <p className="empty" style={{ paddingTop: 120 }}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className={"phone " + settings.side}>
+        <Login onSuccess={handleLogin} />
+      </div>
+    );
+  }
+
   return (
     <div className={"phone " + settings.side}>
       <div className="home">
@@ -137,7 +194,12 @@ export default function App() {
             onToast={showToast}
           />
         ) : (
-          <SettingsTab settings={settings} setSettings={setSettings} />
+          <SettingsTab
+            settings={settings}
+            setSettings={setSettings}
+            user={user}
+            onLogout={logout}
+          />
         )}
       </aside>
 

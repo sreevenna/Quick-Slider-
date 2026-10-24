@@ -1,6 +1,12 @@
-export default function SettingsTab({ settings, setSettings }) {
+export default function SettingsTab({ settings, setSettings, user, onLogout }) {
   return (
     <section className="tab show">
+      <p>
+        Signed in as <b>{user.name}</b>
+        <br />
+        <small>{user.email}</small>
+      </p>
+
       <label>
         Panel side
         <select
@@ -23,6 +29,8 @@ export default function SettingsTab({ settings, setSettings }) {
           onChange={(e) => setSettings({ ...settings, opacity: Number(e.target.value) })}
         />
       </label>
+
+      <button onClick={onLogout}>Log out</button>
     </section>
   );
 }
