@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const Contact = require("./models/Contact");
-const User = require("./models/User");
+const User = require("./models/user");
 
 const sample = [
   { name: "Aarav Sharma", phone: "+91 98765 43210" },

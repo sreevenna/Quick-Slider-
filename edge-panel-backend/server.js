@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/contacts", require("./routes/contacts"));
+app.use("/api/contacts", require("./routes/contacts.js"));
 
 app.use((err, req, res, next) => {
   console.error(err);
